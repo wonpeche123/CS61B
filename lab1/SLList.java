@@ -26,6 +26,6 @@ public class SLList {
 
     public int size(){
         int len = 0;
-
+        return len;
     }
 }
