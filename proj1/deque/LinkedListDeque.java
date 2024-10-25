@@ -71,6 +71,9 @@ public class LinkedListDeque<T> implements Iterable<T> {
     }
 
     public T removeLast(){
+        if(size <= 0){
+            return null;
+        }
         Node<T> current = head.pre;
         current.pre.next = head;
         head.pre = current.pre;

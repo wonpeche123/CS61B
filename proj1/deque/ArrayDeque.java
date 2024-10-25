@@ -90,7 +90,7 @@ public class ArrayDeque<T> implements Iterable<T> {
     }
 
     public T get(int index) {
-        return array[(nextFirst + index + 1) % size];
+        return array[(nextFirst + index + 1) % array.length];
     }
 
     public boolean equals(Object o){
