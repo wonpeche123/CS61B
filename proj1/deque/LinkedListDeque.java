@@ -1,10 +1,9 @@
 package deque;
 
-import java.util.Deque;
 import java.util.Iterator;
 import java.util.Objects;
 
-public class LinkedListDeque<T> implements Iterable<T> {
+public class LinkedListDeque<T> implements Iterable<T>,Deque<T> {
     private Node<T> head;
     private int size;
 
@@ -42,9 +41,9 @@ public class LinkedListDeque<T> implements Iterable<T> {
         size += 1;
     }
 
-    public boolean isEmpty() {
-        return size == 0;
-    }
+//    public boolean isEmpty() {
+//        return size == 0;
+//    }
 
     public int size(){
         return size;
