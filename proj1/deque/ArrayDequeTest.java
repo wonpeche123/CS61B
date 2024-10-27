@@ -117,7 +117,7 @@ public class ArrayDequeTest {
     public void getTest() {
         ArrayDeque<Integer> arrayDeque = new ArrayDeque<>();
 
-        for (int i = 0; i < ; i++) {
+        for (int i = 0; i < 20; i++) {
             arrayDeque.addLast(i);
         }
 

@@ -11,35 +11,35 @@ public class MaxArrayDeque<T> extends ArrayDeque<T> {
         comparator = c;
     }
 
-    public T max(Comparator<T> c){
+    public T max(Comparator<T> c) {
         int maxIndex = 0;
-        for (int i = 0; i<size(); i++){
-            if (c.compare(get(i),get(maxIndex)) > 0){
+        for (int i = 0; i < size(); i++) {
+            if (c.compare(get(i), get(maxIndex)) > 0) {
                 maxIndex = i;
             }
         }
         return get(maxIndex);
     }
 
-    public T max(){
+    public T max() {
         return max(comparator);
     }
 
-    public boolean equals(Object o) {
-        if (o == null) {
-            return false;
-        }
-        if (o == this) {
-            return true;
-        }
-        if (!(o instanceof MaxArrayDeque)) {
-            return false;
-        }
-        if (((MaxArrayDeque<T>) o).max() != max()) {
-            return false;
-        }
-        return super.equals(o);
-    }
+//    public boolean equals(Object o) {
+//        if (o == null) {
+//            return false;
+//        }
+//        if (o == this) {
+//            return true;
+//        }
+//        if (!(o instanceof MaxArrayDeque)) {
+//            return false;
+//        }
+//        if (((MaxArrayDeque<T>) o).max() != max()) {
+//            return false;
+//        }
+//        return super.equals(o);
+//    }
 
 
 }

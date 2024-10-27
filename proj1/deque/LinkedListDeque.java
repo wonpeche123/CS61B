@@ -1,16 +1,15 @@
 package deque;
 
 import java.util.Iterator;
-import java.util.Objects;
 
-public class LinkedListDeque<T> implements Iterable<T>,Deque<T> {
+public class LinkedListDeque<T> implements Iterable<T>, Deque<T> {
     private Node<T> head;
     private int size;
 
     private class Node<T> {
-        public Node<T> pre;
-        public T data;
-        public Node<T> next;
+        Node<T> pre;
+        T data;
+        Node<T> next;
         public Node(T item) {
             data = item;
         }
@@ -45,21 +44,21 @@ public class LinkedListDeque<T> implements Iterable<T>,Deque<T> {
 //        return size == 0;
 //    }
 
-    public int size(){
+    public int size() {
         return size;
     }
 
-    public void printDeque(){
+    public void printDeque() {
         Node<T> current = head.next;
-        for(int i = 0; i < size(); i++){
+        for (int i = 0; i < size(); i++) {
             System.out.print(current.data + " ");
             current = current.next;
         }
         System.out.println();
     }
 
-    public T removeFirst(){
-        if(size <= 0){
+    public T removeFirst() {
+        if (size <= 0) {
             return null;
         }
         Node<T> current = head.next;
@@ -69,8 +68,8 @@ public class LinkedListDeque<T> implements Iterable<T>,Deque<T> {
         return current.data;
     }
 
-    public T removeLast(){
-        if(size <= 0){
+    public T removeLast() {
+        if (size <= 0) {
             return null;
         }
         Node<T> current = head.pre;
@@ -80,13 +79,13 @@ public class LinkedListDeque<T> implements Iterable<T>,Deque<T> {
         return current.data;
     }
 
-    public T get(int index){
-        if(index < 0 || index >= size()){
+    public T get(int index) {
+        if (index < 0 || index >= size()) {
             return null;
         }
         Node<T> current = head.next;
-        for(int i = 0; i < size(); i++){
-            if(index == i){
+        for (int i = 0; i < size(); i++) {
+            if (index == i) {
                 return current.data;
             }
             current = current.next;
@@ -94,36 +93,36 @@ public class LinkedListDeque<T> implements Iterable<T>,Deque<T> {
         return null;
     }
 
-    public T getRecursive(int index){
-        if(index < 0 || index >= size()){
+    public T getRecursive(int index) {
+        if (index < 0 || index >= size()) {
             return null;
         }
         return getRecursiveHelper(index, head.next);
     }
 
-    private T getRecursiveHelper(int index, Node<T> node){
-        if (index == 0){
+    private T getRecursiveHelper(int index, Node<T> node) {
+        if (index == 0) {
             return node.data;
         }
         return getRecursiveHelper(index - 1, node.next);
     }
 
-    public boolean equals(Object o){
-        if (this == o){
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if (o == null){
+        if (o == null) {
             return false;
         }
-        if(!(o instanceof LinkedListDeque)){
+        if (!(o instanceof LinkedListDeque)) {
             return false;
         }
-        LinkedListDeque<T> other = (LinkedListDeque<T>) o;
-        if (this.size() != other.size()){
+        LinkedListDeque<?> other = (LinkedListDeque<?>) o;
+        if (this.size() != other.size()) {
             return false;
         }
-        for (int i = 0; i < size(); i++){
-            if (this.get(i) != other.get(i)){
+        for (int i = 0; i < size(); i++) {
+            if (this.get(i) != other.get(i)) {
                 return false;
             }
         }
@@ -131,18 +130,18 @@ public class LinkedListDeque<T> implements Iterable<T>,Deque<T> {
 
     }
 
-    public Iterator<T> iterator(){
+    public Iterator<T> iterator() {
         return new DequeIterator();
     }
 
-    private class DequeIterator implements Iterator<T>{
-        private int pos ;
+    private class DequeIterator implements Iterator<T> {
+        private int pos;
 
-        public DequeIterator(){
+        DequeIterator() {
             pos = 0;
         }
 
-        public boolean hasNext(){
+        public boolean hasNext() {
             return pos < size;
         }
 

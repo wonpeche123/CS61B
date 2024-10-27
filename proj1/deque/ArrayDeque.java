@@ -2,7 +2,7 @@ package deque;
 
 import java.util.Iterator;
 
-public class ArrayDeque<T> implements Iterable<T>,Deque<T> {
+public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
     private T[] array = (T[]) new Object[8];
     private int size;
     private int nextFirst;
@@ -50,18 +50,19 @@ public class ArrayDeque<T> implements Iterable<T>,Deque<T> {
         return size;
     }
 
-    public void printDeque(){
+    public void printDeque() {
         for (int i = 0; i < size; i++) {
             int j = (nextFirst + 1 + i) % array.length;
             System.out.print(array[j] + " ");
         }
         System.out.println();
     }
-    private void deduce(){
+    private void deduce() {
         if (size < array.length * 0.25 && size > 8) {
             resize(size * 2);
         }
     }
+//    注意有大问题，先把传出的参数定下来，不然在临界的size，nextFirst指针会被再次更改
     public T removeFirst() {
         if (size == 0) {
             return null;
@@ -88,22 +89,22 @@ public class ArrayDeque<T> implements Iterable<T>,Deque<T> {
         return array[(nextFirst + index + 1) % array.length];
     }
 
-    public boolean equals(Object o){
-        if (this == o){
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if (o == null){
+        if (o == null) {
             return false;
         }
-        if(!(o instanceof ArrayDeque)){
+        if (!(o instanceof ArrayDeque)) {
             return false;
         }
         ArrayDeque<T> other = (ArrayDeque<T>) o;
-        if (this.size() != other.size()){
+        if (this.size() != other.size()) {
             return false;
         }
-        for (int i = 0; i < size(); i++){
-            if (this.get(i) != other.get(i)){
+        for (int i = 0; i < size(); i++) {
+            if (this.get(i) != other.get(i)) {
                 return false;
             }
         }
@@ -116,7 +117,7 @@ public class ArrayDeque<T> implements Iterable<T>,Deque<T> {
 
     private class DequeIterator implements Iterator<T> {
         private int count;
-        public DequeIterator() {
+        DequeIterator() {
             count = 0;
         }
 
