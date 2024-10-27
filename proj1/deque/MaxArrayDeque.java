@@ -24,7 +24,7 @@ public class MaxArrayDeque<T> extends ArrayDeque<T> {
     public T max(){
         return max(comparator);
     }
-    @Override
+
     public boolean equals(Object o) {
         if (o == null) {
             return false;

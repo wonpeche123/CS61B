@@ -13,13 +13,7 @@ public class ArrayDeque<T> implements Iterable<T>,Deque<T> {
         nextFirst = 0;
         nextLast = 1;
     }
-    public ArrayDeque(T item) {
-        array[0] = item;
-        size = 1;
-        nextFirst = 7;
-        nextLast = 1;
 
-    }
     private void resize(int newSize) {
         T[] newArray = (T[]) new Object[newSize];
         for (int i = 0; i < size; i++) {
@@ -29,7 +23,6 @@ public class ArrayDeque<T> implements Iterable<T>,Deque<T> {
         array = newArray;
         nextFirst = newSize - 1;
         nextLast = size;
-        size = newSize;
     }
     public void addFirst(T item) {
         if (size == array.length) {
@@ -66,7 +59,7 @@ public class ArrayDeque<T> implements Iterable<T>,Deque<T> {
     }
     private void deduce(){
         if (size < array.length * 0.25 && size > 8) {
-            resize(array.length / 2);
+            resize(size * 2);
         }
     }
     public T removeFirst() {
@@ -74,9 +67,10 @@ public class ArrayDeque<T> implements Iterable<T>,Deque<T> {
             return null;
         }
         nextFirst = (nextFirst + 1) % array.length;
+        T item = array[nextFirst];
         size -= 1;
         deduce();
-        return array[nextFirst];
+        return item;
     }
 
     public T removeLast() {
@@ -84,9 +78,10 @@ public class ArrayDeque<T> implements Iterable<T>,Deque<T> {
             return null;
         }
         nextLast = (nextLast - 1 + array.length) % array.length;
+        T item = array[nextLast];
         size -= 1;
         deduce();
-        return array[nextLast];
+        return item;
     }
 
     public T get(int index) {

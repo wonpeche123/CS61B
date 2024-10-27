@@ -7,7 +7,7 @@ public class LinkedListDeque<T> implements Iterable<T>,Deque<T> {
     private Node<T> head;
     private int size;
 
-    public class Node<T> {
+    private class Node<T> {
         public Node<T> pre;
         public T data;
         public Node<T> next;
@@ -89,6 +89,7 @@ public class LinkedListDeque<T> implements Iterable<T>,Deque<T> {
             if(index == i){
                 return current.data;
             }
+            current = current.next;
         }
         return null;
     }
