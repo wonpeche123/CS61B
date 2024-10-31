@@ -1,3 +1,4 @@
+// 初始化目录，抽象每个处理函数，只对其功能进行整合，不包含具体实现（只针对Dog相关的函数）
 package capers;
 
 import java.io.File;
@@ -18,8 +19,7 @@ public class CapersRepository {
     static final File CWD = new File(System.getProperty("user.dir"));
 
     /** Main metadata folder. */
-    static final File CAPERS_FOLDER = null; // TODO Hint: look at the `join`
-                                            //      function in Utils
+    static final File CAPERS_FOLDER = join(CWD, ".capers");
 
     /**
      * Does required filesystem operations to allow for persistence.
@@ -31,7 +31,8 @@ public class CapersRepository {
      *    - story -- file containing the current story
      */
     public static void setupPersistence() {
-        // TODO
+        CAPERS_FOLDER.mkdirs();
+        Dog.DOG_FOLDER.mkdirs();
     }
 
     /**
@@ -40,7 +41,16 @@ public class CapersRepository {
      * @param text String of the text to be appended to the story
      */
     public static void writeStory(String text) {
-        // TODO
+        File STORY_FILE = join( ".capers", "story.txt");
+        String newstory;
+        if (!STORY_FILE.exists()) {
+            newstory = text + "\n";
+        }else {
+            newstory = readContentsAsString(STORY_FILE);
+            newstory = newstory + text + "\n";
+        }
+        writeContents(STORY_FILE, newstory);
+        System.out.println(newstory);
     }
 
     /**
@@ -49,7 +59,10 @@ public class CapersRepository {
      * Also prints out the dog's information using toString().
      */
     public static void makeDog(String name, String breed, int age) {
-        // TODO
+
+        Dog dog = new Dog(name, breed, age);
+        dog.saveDog();
+        System.out.println(dog.toString());
     }
 
     /**
@@ -59,6 +72,8 @@ public class CapersRepository {
      * @param name String name of the Dog whose birthday we're celebrating.
      */
     public static void celebrateBirthday(String name) {
-        // TODO
+        Dog dog = Dog.fromFile(name);
+        dog.haveBirthday();
+        dog.saveDog();
     }
 }
