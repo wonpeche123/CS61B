@@ -6,7 +6,7 @@ import java.util.Set;
 public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
     private Node<K, V> root;
     //Node
-    public class Node<K, V> {
+    private class Node<K, V> {
         private K key;
         private V value;
         private Node<K, V> left, right;
@@ -25,7 +25,7 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
     public BSTMap() {
     }
 
-    public boolean isEmpty() {
+    private boolean isEmpty() {
         return size() == 0;
     }
 
@@ -41,7 +41,7 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
         return node.size;
     }
 
-    public boolean contains(K key) {
+    private boolean contains(K key) {
         if (key == null) {
             throw new IllegalArgumentException("argument to contains() is null");
         }
@@ -97,6 +97,9 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
     }
 
     private Node deleteMax(Node<K, V> node) {
+        if (node == null) {
+            return null;
+        }
         if (node.right != null) {
             node.right = deleteMax(node.right);
         }else {
@@ -105,7 +108,7 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
         node.size = size(node.left) + size(node.right) + 1;
         return node;
     }
-    public void delete(K key) {
+    private void delete(K key) {
         if (key == null) {
             return;
         }
@@ -150,7 +153,7 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
 
     @Override
     public boolean containsKey(K key) {
-        return get(key) != null;
+        return !(get(key) == null);
     }
 
     public void printInOrder() {
