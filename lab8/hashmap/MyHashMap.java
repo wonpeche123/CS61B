@@ -32,7 +32,7 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
     private static final double DEFAULT_LOAD_FACTOR = 0.75;
     private double loadFactor;
 
-    int size;
+    private int size;
 
     /** Constructors */
     public MyHashMap() {
