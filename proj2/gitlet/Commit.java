@@ -8,6 +8,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date; // TODO: You'll likely use this in this class
+import java.util.HashMap;
 import java.util.Locale;
 import static gitlet.Utils.*;
 
@@ -37,25 +38,13 @@ public class Commit implements Serializable {
     /** The parent_2 of this Commit. */
     private Commit parent_2;
     /** The blobs of this Commit. */
-    private ArrayList<Node> blobs;
+    private HashMap<String, String> blobMap;
     /** The hashcode of this Commit. */
     private String id;
 
     public static final File CWD = new File(System.getProperty("user.dir"));
     /** The .gitlet directory. */
     public static final File GITLET_DIR = join(CWD, ".gitlet");
-
-
-    /** A Node is a blob. */
-    private class Node {
-        public String filename;
-        public String sha1Hash;
-
-        public Node(String filename ,String hashcode) {
-            this.filename = filename;
-            this.sha1Hash = hashcode;
-        }
-    }
 
 
     /* TODO: fill in the rest of this class. */
@@ -67,18 +56,18 @@ public class Commit implements Serializable {
         timestamp = timeToTimeStamp(time);
         parent_1 = null;
         parent_2 = null;
-        blobs = new ArrayList<>();
+        blobMap = new HashMap<>();
 //  只针对初始化时没有parents指针的情况，这种特殊的对应也能保证hash的区分度
-        id = sha1(message, timestamp, "null", "null", blobs.toString());
+        id = sha1(message, timestamp, "null", "null", blobMap.toString());
     }
 
-    public Commit(String message, Commit parent_1, Commit parent_2, ArrayList<Node> blobs) {
+    public Commit(String message, Commit parent_1, Commit parent_2, HashMap<String, String> blobs) {
         this.message = message;
         time = new Date(0);
         timestamp = timeToTimeStamp(time);
         this.parent_1 = parent_1;
         this.parent_2 = parent_2;
-        this.blobs = blobs;
+        this.blobMap = blobs;
         id = sha1(message, timestamp, parent_1.toString(), parent_2.toString(), blobs.toString());
     }
 
@@ -95,8 +84,13 @@ public class Commit implements Serializable {
     }
 
     public void save() {
-        File COMMIT_FILE = join(GITLET_DIR, "object", id);
+        File COMMIT_FILE = join(GITLET_DIR, "objects", "commits", id);
         writeObject(COMMIT_FILE, this);
+    }
+
+    public boolean isSameWithCommit(String absFilePath, String blobId) {
+        String value = blobMap.get(absFilePath);
+        return value.equals(blobId);
     }
 
 }
