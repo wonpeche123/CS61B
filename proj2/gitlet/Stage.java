@@ -4,22 +4,25 @@ import java.io.File;
 import java.io.Serializable;
 import java.util.HashMap;
 import static gitlet.Utils.*;
-
+import static gitlet.Repository.STAGE;
 
 public class Stage implements Serializable {
 //    HashMap<path, SHA1>
     private HashMap<String, String> addition;
     private HashMap<String, String> removal;
-    private static File StagePath;
+    private static final File StagePath = STAGE;
 
-    public Stage(File path) {
+    public Stage() {
         addition = new HashMap<>();
         removal = new HashMap<>();
-        StagePath = path;
     }
 
     public void save() {
         writeObject(StagePath, this);
+    }
+
+    public boolean empty() {
+        return addition.isEmpty() && removal.isEmpty();
     }
 
     public static Stage fromFile() {
@@ -38,16 +41,24 @@ public class Stage implements Serializable {
         addition.put(absPath, SHA1);
     }
 
-    public void addToRemoval(String absPath, String SHA1) {
-        removal.put(absPath, SHA1);
+    public void addToRemoval(String absPath) {
+        removal.put(absPath, "0");
     }
 
-    public void removeFromAddition(String item){
-        addition.remove(item);
+    public void removeFromAddition(String absPath){
+        addition.remove(absPath);
     }
 
-    public void removeFromRemoval(String item){
-        removal.remove(item);
+    public void removeFromRemoval(String absPath){
+        removal.remove(absPath);
+    }
+
+    public HashMap<String, String> getAddition() {
+        return addition;
+    }
+
+    public HashMap<String, String> getRemoval() {
+        return removal;
     }
 
 }

@@ -27,6 +27,6 @@ public class Blob implements Serializable {
     }
 //    only record content
     public static void save(Blob blob) {
-        writeObject(blob.saveblobpath, blob.content);
+        writeContents(blob.saveblobpath, blob.content);
     }
 }

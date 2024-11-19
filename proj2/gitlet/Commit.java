@@ -6,11 +6,12 @@ import java.io.File;
 import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date; // TODO: You'll likely use this in this class
 import java.util.HashMap;
 import java.util.Locale;
 import static gitlet.Utils.*;
+import static gitlet.Repository.COMMIT_DIR;
+import static gitlet.Repository.BLOB_DIR;
 
 /** Represents a gitlet commit object.
  *  TODO: It's a good idea to give a description here of what else this Class
@@ -42,9 +43,8 @@ public class Commit implements Serializable {
     /** The hashcode of this Commit. */
     private String id;
 
-    public static final File CWD = new File(System.getProperty("user.dir"));
     /** The .gitlet directory. */
-    public static final File GITLET_DIR = join(CWD, ".gitlet");
+
 
 
     /* TODO: fill in the rest of this class. */
@@ -63,12 +63,25 @@ public class Commit implements Serializable {
 
     public Commit(String message, Commit parent_1, Commit parent_2, HashMap<String, String> blobs) {
         this.message = message;
-        time = new Date(0);
+        time = new Date();
         timestamp = timeToTimeStamp(time);
         this.parent_1 = parent_1;
         this.parent_2 = parent_2;
+
+        String p1, p2;
+        if (parent_1 == null) {
+            p1 = "null";
+        }else {
+            p1 = parent_1.toString();
+        }
+        if (parent_2 == null) {
+            p2 = "null";
+        }else {
+            p2 = parent_2.toString();
+        }
+
         this.blobMap = blobs;
-        id = sha1(message, timestamp, parent_1.toString(), parent_2.toString(), blobs.toString());
+        id = sha1(message, timestamp, p1, p2, blobMap.toString());
     }
 
     /** 将UNIX时间转化成特定的时间戳格式*/
@@ -78,19 +91,57 @@ public class Commit implements Serializable {
     }
     /** Commit Methods*/
 
+    /** 获得当前Commit的message*/
+    public String getMessage() {
+        return message;
+    }
+
+    /** 获得当前Commit的timestamp*/
+    public String getTimestamp() {
+        return timestamp;
+    }
+
+    /** 获得当前Commit的parent1*/
+    public Commit getParent_1() {
+        return parent_1;
+    }
+
+    /** 获得当前Commit的parent2*/
+    public Commit getParent_2() {
+        return parent_2;
+    }
+
+    /** 获得当前Commit的blobMap*/
+    public HashMap<String, String> getBlobMap() {
+        return blobMap;
+    }
+
     /** 获得当前Commit的hashcode*/
-    public String getid() {
+    public String getId() {
         return id;
     }
 
+    /** 是否存在对应路径blob*/
+    public boolean containBlob(String absFilePath) {
+        String targetBlobId = blobMap.get(absFilePath);
+        return targetBlobId != null;
+    }
+
+    /** 获得对应路径blob的文本内容*/
+    public String getBlobContent(String absFilePath) {
+        String targetBlobId = blobMap.get(absFilePath);
+        File tagetFile = join(BLOB_DIR, targetBlobId);
+        return readContentsAsString(tagetFile);
+    }
+
     public void save() {
-        File COMMIT_FILE = join(GITLET_DIR, "objects", "commits", id);
+        File COMMIT_FILE = join(COMMIT_DIR, id);
         writeObject(COMMIT_FILE, this);
     }
 
     public boolean isSameWithCommit(String absFilePath, String blobId) {
         String value = blobMap.get(absFilePath);
-        return value.equals(blobId);
+        return (value != null) && value.equals(blobId) ;
     }
 
 }
