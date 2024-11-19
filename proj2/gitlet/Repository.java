@@ -450,18 +450,23 @@ public class Repository {
         Commit targetCommit = readObject(targetCommitFile, Commit.class);
         return  targetCommit;
     }
-    /** 删除CWD所有文件并检查是否有未被追踪的文件，防止彻底失去，并报错*/
+    /** 删除CWD所有文件并检查是否有未被追踪(即不被commit或addition记录的文件)的文件，防止彻底失去，并报错*/
     private static void deleteCheckUntracked(Commit currCommit) {
         Set<String> commitFilenames = currCommit.getBlobMap().keySet();
         List<String> currFilenames = plainFilenamesIn(CWD);
 
+        Stage stage = Stage.fromFile();
+        Set<String> additionSet = stage.getAddition().keySet();
+
         if (currFilenames != null) {
             for(String filename : currFilenames) {
-                String AbsFilename = join(CWD, filename).getAbsolutePath();
-                if (!commitFilenames.contains(AbsFilename)) {
+                File file = join(CWD, filename);
+                String AbsFilename = file.getAbsolutePath();
+                if (!commitFilenames.contains(AbsFilename) && !additionSet.contains(AbsFilename)) {
                     System.out.println("There is an untracked file in the way; delete it, or add and commit it first.");
                     System.exit(0);
                 }
+                file.delete();
             }
         }
     }
@@ -511,7 +516,7 @@ public class Repository {
         resumeEnv();
         List<String> branchNames = plainFilenamesIn(HEADS_DIR);
         //待删除的分支名称不存在
-        if (branchNames != null || !branchNames.contains(branchName)) {
+        if (branchNames == null || !branchNames.contains(branchName)) {
             System.out.println("A branch with that name does not exist.");
             System.exit(0);
         }
@@ -529,6 +534,21 @@ public class Repository {
 
 //  ########## reset ############
     public static void reset(String commitId) {
+        resumeEnv();
+        Commit newHead = getCommit(commitId);
+        checkoutCommit(newHead);
+        //      清除Stage区
+        Stage stage = new Stage();
+        stage.save();
+        //      更改HEADS下当前分支头的文件内容，由于分支并没有切换，HEAD不变
+        writeContents(currHead, commitId);
+    }
+//  ########## reset ############
 
+//  ########## merge ############
+    public static void merge(String branchName) {
+//        TODO:
     }
 }
+
+

@@ -86,6 +86,12 @@ public class Main {
                 Repository.checkIfInit();
                 Repository.reset(args[1]);
                 break;
+            case "merge":
+                // handle the `merge [branch name]` command
+                validateNumArgs("merge", args, 2);
+                Repository.checkIfInit();
+                Repository.merge(args[1]);
+                break;
         }
     }
 
