@@ -144,4 +144,9 @@ public class Commit implements Serializable {
         return (value != null) && value.equals(blobId) ;
     }
 
+    public boolean isSameCommit(Commit target) {
+        String id_1 = id;
+        String id_2 = target.getId();
+        return id_1.equals(id_2);
+    }
 }
