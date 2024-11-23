@@ -35,9 +35,9 @@ public class Commit implements Serializable {
     /** The Unix time. */
     private Date time;
     /** The parent_1 of this Commit. */
-    private Commit parent_1;
+    private String parent_1;
     /** The parent_2 of this Commit. */
-    private Commit parent_2;
+    private String parent_2;
     /** The blobs of this Commit. */
     private HashMap<String, String> blobMap;
     /** The hashcode of this Commit. */
@@ -61,7 +61,7 @@ public class Commit implements Serializable {
         id = sha1(message, timestamp, "null", "null", blobMap.toString());
     }
 
-    public Commit(String message, Commit parent_1, Commit parent_2, HashMap<String, String> blobs) {
+    public Commit(String message, String parent_1, String parent_2, HashMap<String, String> blobs) {
         this.message = message;
         time = new Date();
         timestamp = timeToTimeStamp(time);
@@ -72,12 +72,12 @@ public class Commit implements Serializable {
         if (parent_1 == null) {
             p1 = "null";
         }else {
-            p1 = parent_1.toString();
+            p1 = parent_1;
         }
         if (parent_2 == null) {
             p2 = "null";
         }else {
-            p2 = parent_2.toString();
+            p2 = parent_2;
         }
 
         this.blobMap = blobs;
@@ -101,13 +101,13 @@ public class Commit implements Serializable {
         return timestamp;
     }
 
-    /** 获得当前Commit的parent1*/
-    public Commit getParent_1() {
+    /** 获得当前Commit的parent1的绝对路径*/
+    public String getParent_1() {
         return parent_1;
     }
 
-    /** 获得当前Commit的parent2*/
-    public Commit getParent_2() {
+    /** 获得当前Commit的parent2的绝对路径*/
+    public String getParent_2() {
         return parent_2;
     }
 
