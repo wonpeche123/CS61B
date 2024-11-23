@@ -45,11 +45,11 @@ public class Stage implements Serializable {
         removal.put(absPath, "0");
     }
 
-    public void removeFromAddition(String absPath){
+    public void removeFromAddition(String absPath) {
         addition.remove(absPath);
     }
 
-    public void removeFromRemoval(String absPath){
+    public void removeFromRemoval(String absPath) {
         removal.remove(absPath);
     }
 

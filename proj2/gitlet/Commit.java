@@ -1,12 +1,11 @@
 package gitlet;
 
-// TODO: any imports you need here
 
 import java.io.File;
 import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date; // TODO: You'll likely use this in this class
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import static gitlet.Utils.*;
@@ -14,14 +13,13 @@ import static gitlet.Repository.COMMIT_DIR;
 import static gitlet.Repository.BLOB_DIR;
 
 /** Represents a gitlet commit object.
- *  TODO: It's a good idea to give a description here of what else this Class
+ *
  *  does at a high level.
  *
- *  @author TODO
+ *  @author wonpeche
  */
 public class Commit implements Serializable {
     /**
-     * TODO: add instance variables here.
      *
      * List all instance variables of the Commit class here with a useful
      * comment above them describing what that variable represents and how that
@@ -34,10 +32,10 @@ public class Commit implements Serializable {
     private String timestamp;
     /** The Unix time. */
     private Date time;
-    /** The parent_1 of this Commit. */
-    private String parent_1;
-    /** The parent_2 of this Commit. */
-    private String parent_2;
+    /** The parent1 of this Commit. */
+    private String parent1;
+    /** The parent2 of this Commit. */
+    private String parent2;
     /** The blobs of this Commit. */
     private HashMap<String, String> blobMap;
     /** The hashcode of this Commit. */
@@ -47,37 +45,35 @@ public class Commit implements Serializable {
 
 
 
-    /* TODO: fill in the rest of this class. */
-
     public Commit() {
 
         message = "initial commit";
         time = new Date(0);
         timestamp = timeToTimeStamp(time);
-        parent_1 = null;
-        parent_2 = null;
+        parent1 = null;
+        parent2 = null;
         blobMap = new HashMap<>();
 //  只针对初始化时没有parents指针的情况，这种特殊的对应也能保证hash的区分度
         id = sha1(message, timestamp, "null", "null", blobMap.toString());
     }
 
-    public Commit(String message, String parent_1, String parent_2, HashMap<String, String> blobs) {
+    public Commit(String message, String parent1, String parent2, HashMap<String, String> blobs) {
         this.message = message;
         time = new Date();
         timestamp = timeToTimeStamp(time);
-        this.parent_1 = parent_1;
-        this.parent_2 = parent_2;
+        this.parent1 = parent1;
+        this.parent2 = parent2;
 
         String p1, p2;
-        if (parent_1 == null) {
+        if (parent1 == null) {
             p1 = "null";
-        }else {
-            p1 = parent_1;
+        } else {
+            p1 = parent1;
         }
-        if (parent_2 == null) {
+        if (parent2 == null) {
             p2 = "null";
-        }else {
-            p2 = parent_2;
+        } else {
+            p2 = parent2;
         }
 
         this.blobMap = blobs;
@@ -102,13 +98,13 @@ public class Commit implements Serializable {
     }
 
     /** 获得当前Commit的parent1的绝对路径*/
-    public String getParent_1() {
-        return parent_1;
+    public String getParent1() {
+        return parent1;
     }
 
     /** 获得当前Commit的parent2的绝对路径*/
-    public String getParent_2() {
-        return parent_2;
+    public String getParent2() {
+        return parent2;
     }
 
     /** 获得当前Commit的blobMap*/
@@ -141,12 +137,12 @@ public class Commit implements Serializable {
 
     public boolean isSameWithCommit(String absFilePath, String blobId) {
         String value = blobMap.get(absFilePath);
-        return (value != null) && value.equals(blobId) ;
+        return (value != null) && value.equals(blobId);
     }
 
     public boolean isSameCommit(Commit target) {
-        String id_1 = id;
-        String id_2 = target.getId();
-        return id_1.equals(id_2);
+        String id1 = id;
+        String id2 = target.getId();
+        return id1.equals(id2);
     }
 }

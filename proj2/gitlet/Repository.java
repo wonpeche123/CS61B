@@ -5,17 +5,15 @@ import java.util.*;
 
 import static gitlet.Utils.*;
 
-// TODO: any imports you need here
 
 /** Represents a gitlet repository.
- *  TODO: It's a good idea to give a description here of what else this Class
+ *  It's a good idea to give a description here of what else this Class
  *  does at a high level.
  *
- *  @author TODO
+ *  @author wonpeche
  */
 public class Repository {
     /**
-     * TODO: add instance variables here.
      *
      * List all instance variables of the Repository class here with a useful
      * comment above them describing what that variable represents and how that
@@ -52,11 +50,11 @@ public class Repository {
     /** 暂存区 */
     public static final File STAGE = join(GITLET_DIR, "stage");
 
-    public static Commit currCommit;
-    public static File currHead;
+    private static Commit currCommit;
+    private static File currHead;
 
     /** init */
-    public static void init () {
+    public static void init() {
         if (GITLET_DIR.exists()) {
             System.out.println("A Gitlet version-control system already exists in the current directory.");
             System.exit(0);
@@ -74,9 +72,9 @@ public class Repository {
     }
 
     private static void initCommit() {
-        Commit initial_commit  = new Commit();
-        currCommit = initial_commit;
-        initial_commit.save();
+        Commit initialCommit = new Commit();
+        currCommit = initialCommit;
+        initialCommit.save();
     }
 
     private static void initHeads() {
@@ -151,7 +149,7 @@ public class Repository {
         commitWithMerge(message, null);
     }
     /** 考虑双亲的commit命令 */
-    private static void commitWithMerge(String message, String parent_2) {
+    private static void commitWithMerge(String message, String parent2) {
         resumeEnv();
         Stage stage = Stage.fromFile();
 //        commit failures : stage not empty and message not blank
@@ -179,9 +177,9 @@ public class Repository {
         stage.save();
 //      后续目录文件信息处理
         Commit newCommit;
-        if (parent_2 != null) {
-            newCommit = new Commit(message, currCommit.getId(), parent_2, newBlobMap);
-        }else {
+        if (parent2 != null) {
+            newCommit = new Commit(message, currCommit.getId(), parent2, newBlobMap);
+        } else {
             newCommit = new Commit(message, currCommit.getId(), null, newBlobMap);
         }
         newCommit.save();
@@ -211,7 +209,7 @@ public class Repository {
         //      清理addition或者删除文件（本来未被追踪则不删）加入removal
         if (stage.isInAddition(absFilePathString)) {
             stage.removeFromAddition(absFilePathString);
-        }else {
+        } else {
             absFilePath.delete();
             stage.addToRemoval(absFilePathString);
         }
@@ -227,7 +225,7 @@ public class Repository {
         Commit pointer = currCommit;
         while (pointer != null) {
             logPrintCommit(pointer);
-            String parent = pointer.getParent_1();
+            String parent = pointer.getParent1();
             pointer = getCommitNoReport(parent);
         }
     }
@@ -255,10 +253,10 @@ public class Repository {
         System.out.println("===");
         System.out.println("commit " + commit.getId());
         //有两个父结点的commit是由merge得到的
-        String parent_1 = commit.getParent_1();
-        String parent_2 = commit.getParent_2();
-        if (parent_1 != null && parent_2 != null) {
-            System.out.println("Merge: " + parent_1.substring(0, 7) + " " + parent_1.substring(0, 7) + " ");
+        String parent1 = commit.getParent1();
+        String parent2 = commit.getParent2();
+        if (parent1 != null && parent2 != null) {
+            System.out.println("Merge: " + parent1.substring(0, 7) + " " + parent1.substring(0, 7) + " ");
         }
         System.out.println("Date: " + commit.getTimestamp());
         System.out.println(commit.getMessage());
@@ -313,7 +311,7 @@ public class Repository {
                 String pointerString = pointer.getAbsolutePath();
                 if (pointerString.equals(currHeadString)) {
                     System.out.println("*" + branchName);
-                }else {
+                } else {
                     System.out.println(branchName);
                 }
             }
@@ -342,15 +340,51 @@ public class Repository {
 
     /** 打印当前修改未被stage记录信息*/
     private static void printModiNotStage() {
-        // TODO:
+        // not done:
         System.out.println("=== Modifications Not Staged For Commit ===");
+
+//        Set<String> commitFilenames = currCommit.getBlobMap().keySet();
+//        List<String> currFilenames = plainFilenamesIn(CWD);
+//
+//        Stage stage = Stage.fromFile();
+//        Set<String> additionSet = stage.getAddition().keySet();
+//
+//        if (currFilenames != null) {
+//            for (String filename : currFilenames) {
+//                File file = join(CWD, filename);
+//                String absFilename = file.getAbsolutePath();
+//                if (commitFilenames.contains(absFilename)) {
+//                    if () {
+//                        !additionSet.contains(absFilename)
+//                    }
+//                    System.out.println(filename);
+//                }
+//            }
+//        }
+
         System.out.println(" ");
     }
 
     /** 打印当前未被追踪文件信息*/
     private static void printUntracked() {
-        // TODO:
         System.out.println("=== Untracked Files ===");
+
+        Set<String> commitFilenames = currCommit.getBlobMap().keySet();
+        List<String> currFilenames = plainFilenamesIn(CWD);
+
+        Stage stage = Stage.fromFile();
+        Set<String> additionSet = stage.getAddition().keySet();
+
+        if (currFilenames != null) {
+            for (String filename : currFilenames) {
+                File file = join(CWD, filename);
+                String absFilename = file.getAbsolutePath();
+                if (!commitFilenames.contains(absFilename) && !additionSet.contains(absFilename)) {
+                    System.out.println(filename);
+                }
+            }
+        }
+
         System.out.println(" ");
     }
 //  ########## status ############
@@ -363,9 +397,9 @@ public class Repository {
         int type = checkType(args);
         if (type == 1) {
             checkoutFile(args[2]);
-        }else if (type ==2) {
+        } else if (type == 2) {
             checkoutCommitFile(args[1], args[3]);
-        }else {
+        } else {
             checkoutBranch(args[1]);
         }
     }
@@ -445,7 +479,9 @@ public class Repository {
     /** 检查是否存在对应分支,不负责报错*/
     private static boolean branchIsExist(String branchName) {
         List<String> branchNames = plainFilenamesIn(HEADS_DIR);
-        if (branchNames == null) return false;
+        if (branchNames == null) {
+            return false;
+        }
         return branchNames.contains(branchName);
     }
     /** 检查是否是当前分支，不负责报错*/
@@ -503,10 +539,10 @@ public class Repository {
         Set<String> additionSet = stage.getAddition().keySet();
 
         if (currFilenames != null) {
-            for(String filename : currFilenames) {
+            for (String filename : currFilenames) {
                 File file = join(CWD, filename);
-                String AbsFilename = file.getAbsolutePath();
-                if (!commitFilenames.contains(AbsFilename) && !additionSet.contains(AbsFilename)) {
+                String absFilename = file.getAbsolutePath();
+                if (!commitFilenames.contains(absFilename) && !additionSet.contains(absFilename)) {
                     System.out.println("There is an untracked file in the way; delete it, or add and commit it first.");
                     System.exit(0);
                 }
@@ -519,15 +555,15 @@ public class Repository {
 //      文件内容
         String blobContent = newCommit.getBlobContent(absFilePath);
 //      文件名
-        File newfile= new File(absFilePath);
+        File newfile = new File(absFilePath);
 //      恢复文件
         writeContents(newfile, blobContent);
     }
     /** 恢复新commit的所有文件到CWD*/
     private static void resumeCWD(Commit newCommit) {
         Set<String> commitFilenames = newCommit.getBlobMap().keySet();
-        for (String AbsFilename : commitFilenames) {
-            resumeFile(newCommit, AbsFilename);
+        for (String absFilename : commitFilenames) {
+            resumeFile(newCommit, absFilename);
         }
     }
     /** 切换到对应commit*/
@@ -590,7 +626,7 @@ public class Repository {
         resumeEnv();
 
         //检查是否存在对应分支
-        if(!branchIsExist(branchName)) {
+        if (!branchIsExist(branchName)) {
             System.out.println("A branch with that name does not exist. ");
             System.exit(0);
         }
@@ -608,91 +644,92 @@ public class Repository {
         //检查CWD是否有未被追踪文件,不能清空CWD开始merge
         checkUntracked(currCommit);
 
-        Commit commit_1 = currCommit;
+        Commit commit1 = currCommit;
         File mergeBranch = join(HEADS_DIR, branchName);
-        String commit_2_Id = readContentsAsString(mergeBranch);
-        Commit commit_2 = getCommit(commit_2_Id);
+        String commit2Id = readContentsAsString(mergeBranch);
+        Commit commit2 = getCommit(commit2Id);
 
-        Commit splitPoint = findSplitPoint(commit_1, commit_2);
+        Commit splitPoint = findSplitPoint(commit1, commit2);
         //被合并的分支落后或等长
-        if (splitPoint.isSameCommit(commit_2)) {
+        if (splitPoint.isSameCommit(commit2)) {
             System.out.println("Given branch is an ancestor of the current branch.");
             System.exit(0);
         }
         //被合并的分支领先，快速移动并修改当前分支head指向的commit
-        if (splitPoint.isSameCommit(commit_1)) {
-            String newHeadId = commit_2.getId();
+        if (splitPoint.isSameCommit(commit1)) {
+            String newHeadId = commit2.getId();
             writeContents(currHead, newHeadId);
             System.out.println("Current branch fast-forwarded.");
             System.exit(0);
         }
-        //TODO:两条分支不共线
-        //commit_1 发生变化的文件
-        HashMap<String, Integer> changedFiles_1 = branchChanged(splitPoint, commit_1);
-//        System.out.println("changedFiles_1 " + changedFiles_1.keySet());
-        //commit_2 发生变化的文件
-        HashMap<String, Integer> changedFiles_2 = branchChanged(splitPoint, commit_2);
-//        System.out.println("changedFiles_2 " + changedFiles_2.keySet());
-        Set<String> allFiles = getAllFiles(splitPoint, commit_1, commit_2);
+        //commit1 发生变化的文件
+        HashMap<String, Integer> changedFiles1 = branchChanged(splitPoint, commit1);
+//        System.out.println("changedFiles1 " + changedFiles1.keySet());
+        //commit2 发生变化的文件
+        HashMap<String, Integer> changedFiles2 = branchChanged(splitPoint, commit2);
+//        System.out.println("changedFiles2 " + changedFiles2.keySet());
+        Set<String> allFiles = getAllFiles(splitPoint, commit1, commit2);
 //        System.out.println("allFiles " + allFiles);
 
         for (String fileString : allFiles) {
-            // case 0: file not changed in both commit_2 and commit_1，不用操作，此时CWD存在该文件最终副本
-            // case 1: file changed in commit_2 not in commit_1
-            if (!changedFiles_1.containsKey(fileString) && changedFiles_2.containsKey(fileString)) {
+            // case 0: file not changed in both commit2 and commit1，不用操作，此时CWD存在该文件最终副本
+            // case 1: file changed in commit2 not in commit1
+            if (!changedFiles1.containsKey(fileString) && changedFiles2.containsKey(fileString)) {
 //                System.out.println(fileString + " case1");
-                int flag = changedFiles_2.get(fileString);
-                onlyChanged(fileString, flag, commit_2, 2);
+                int flag = changedFiles2.get(fileString);
+                onlyChanged(fileString, flag, commit2, 2);
             }
-            // case 2: file changed in commit_1 not in commit_2
-            if (changedFiles_1.containsKey(fileString) && !changedFiles_2.containsKey(fileString)) {
+            // case 2: file changed in commit1 not in commit2
+            if (changedFiles1.containsKey(fileString) && !changedFiles2.containsKey(fileString)) {
 //                System.out.println(fileString + " case2");
-                int flag = changedFiles_1.get(fileString);
-                onlyChanged(fileString, flag, commit_1, 1);
+                int flag = changedFiles1.get(fileString);
+                onlyChanged(fileString, flag, commit1, 1);
             }
-            // case 3: file changed the same both in commit_1 and in commit_2
-            // case 4: file changed differently in commit_1 and in commit_2
-            if (changedFiles_1.containsKey(fileString) && changedFiles_2.containsKey(fileString)) {
-                int flag_1 = changedFiles_1.get(fileString);
-                int flag_2 = changedFiles_2.get(fileString);
-                bothChanged(fileString, flag_1, flag_2, commit_1, commit_2);
+            // case 3: file changed the same both in commit1 and in commit2
+            // case 4: file changed differently in commit1 and in commit2
+            if (changedFiles1.containsKey(fileString) && changedFiles2.containsKey(fileString)) {
+                int flag1 = changedFiles1.get(fileString);
+                int flag2 = changedFiles2.get(fileString);
+                bothChanged(fileString, flag1, flag2, commit1, commit2);
             }
         }
         String curBranchName = currHead.getName();
-        commitWithMerge("Merged " + branchName + " into " + curBranchName + ".", commit_2_Id);
+        commitWithMerge("Merged " + branchName + " into " + curBranchName + ".", commit2Id);
     }
 
     /** 找到分裂点，只沿着第一个父结点(对于merge后的再次merge找到的分裂点不是最近的)*/
-    private static Commit findSplitPoint(Commit commit_1, Commit commit_2) {
-        LinkedList<Commit> branch_1 = new LinkedList<>();
-        LinkedList<Commit> branch_2 = new LinkedList<>();
+    private static Commit findSplitPoint(Commit commit1, Commit commit2) {
+        LinkedList<Commit> branch1 = new LinkedList<>();
+        LinkedList<Commit> branch2 = new LinkedList<>();
 
-        Commit pointer_1 = commit_1;
-        Commit pointer_2 = commit_2;
-        while (pointer_1 != null) {
-            branch_1.addFirst(pointer_1);
-            String parent = pointer_1.getParent_1();
-            pointer_1 = getCommitNoReport(parent);
+        Commit pointer1 = commit1;
+        Commit pointer2 = commit2;
+        while (pointer1 != null) {
+            branch1.addFirst(pointer1);
+            String parent = pointer1.getParent1();
+            pointer1 = getCommitNoReport(parent);
         }
-        while (pointer_2 != null) {
-            branch_2.addFirst(pointer_2);
-            String parent = pointer_2.getParent_1();
-            pointer_2 = getCommitNoReport(parent);
+        while (pointer2 != null) {
+            branch2.addFirst(pointer2);
+            String parent = pointer2.getParent1();
+            pointer2 = getCommitNoReport(parent);
         }
-        int length_1 = branch_1.size();
-        int length_2 = branch_2.size();
+        int length1 = branch1.size();
+        int length2 = branch2.size();
         int i;
-        for(i = 0; i < length_1 && i < length_2; i++) {
+        for (i = 0; i < length1 && i < length2; i++) {
             //  第一个不同的就是split point
-//            System.out.println("master: " + branch_1.get(i).getId() + " branch: " + branch_2.get(i).getId());
-            if (!branch_1.get(i).isSameCommit(branch_2.get(i))) {
-//                System.out.println("return: " + branch_1.get(i-1).getId());
-                return branch_1.get(i-1);
+//            System.out.println("master: " + branch1.get(i).getId() + " branch: " + branch2.get(i).getId());
+            if (!branch1.get(i).isSameCommit(branch2.get(i))) {
+//                System.out.println("return: " + branch1.get(i-1).getId());
+                return branch1.get(i - 1);
             }
         }
-        if (length_1 >= length_2) {
-            return branch_2.get(i-1);
-        }else return branch_1.get(i-1);
+        if (length1 >= length2) {
+            return branch2.get(i - 1);
+        } else {
+            return branch1.get(i - 1);
+        }
     }
     /** 寻找某分支中相对于分裂点变化的blobs,用一个HashMap记录变化的文件（绝对路径），对应的value为变化的类型*/
     private static HashMap<String, Integer> branchChanged(Commit splitPoint, Commit targetCommit) {
@@ -713,7 +750,7 @@ public class Repository {
                 if (!branchFileId.equals(splitFileId)) {
                     changedFiles.put(branchFile, 2);
                 }
-            }else {
+            } else {
                 //新增的文件（记为1）
                 changedFiles.put(branchFile, 1);
             }
@@ -728,20 +765,20 @@ public class Repository {
         return changedFiles;
     }
     /** 返回三个commit中所有文件的集合*/
-    private static Set<String> getAllFiles(Commit splitPoint, Commit commit_1, Commit commit_2) {
+    private static Set<String> getAllFiles(Commit splitPoint, Commit commit1, Commit commit2) {
         Set<String> allFiles = new HashSet<>();
         Set<String> splitPointFiles = splitPoint.getBlobMap().keySet();
-        Set<String> commit_1_Files = commit_1.getBlobMap().keySet();
-        Set<String> commit_2_Files = commit_2.getBlobMap().keySet();
+        Set<String> commit1Files = commit1.getBlobMap().keySet();
+        Set<String> commit2Files = commit2.getBlobMap().keySet();
 
         allFiles.addAll(splitPointFiles);
-        allFiles.addAll(commit_1_Files);
-        allFiles.addAll(commit_2_Files);
+        allFiles.addAll(commit1Files);
+        allFiles.addAll(commit2Files);
 
         return allFiles;
     }
     /** 只在一个commit改动过的文件*/
-    private static void onlyChanged(String fileString, int flag, Commit commit,int commitNumber) {
+    private static void onlyChanged(String fileString, int flag, Commit commit, int commitNumber) {
         // 只要文件的名字，作为add等操作的参数
         File file = new File(fileString);
         String filename = file.getName();
@@ -755,7 +792,7 @@ public class Repository {
                 stage.addToRemoval(fileString);
                 stage.save();
             }
-        }else {     // 其他的文件修改后，使用add命令加入stage区
+        } else {     // 其他的文件修改后，使用add命令加入stage区
             String content = commit.getBlobContent(fileString);
             writeContents(file, content);
             add(filename);
@@ -768,48 +805,48 @@ public class Repository {
      contents of file in given branch
      >>>>>>>
      */
-    private static void bothChanged(String fileString, int flag_1, int flag_2, Commit commit_1, Commit commit_2) {
-//        System.out.println("filename: " + fileString + " c_1: " + flag_1 + " c_2: " + flag_2 + "\n");
+    private static void bothChanged(String fileString, int flag1, int flag2, Commit commit1, Commit commit2) {
+//        System.out.println("filename: " + fileString + " c_1: " + flag1 + " c_2: " + flag2 + "\n");
 
         File currfile = new File(fileString);
         // 只要文件的名字，作为add等操作的参数
         String filename = currfile.getName();
         // (0,0):同时删除的文件，不用操作，因为此时CWD并没有该文件
-        if (flag_1 == 0 && flag_2 == 2) {
+        if (flag1 == 0 && flag2 == 2) {
             //不可能存在(0,1) or (1,0)
             //(0,2):current 删除，given修改
-            String content_2 = commit_2.getBlobContent(fileString);
-            conflictFileContent(currfile, "", content_2);
+            String content2 = commit2.getBlobContent(fileString);
+            conflictFileContent(currfile, "", content2);
             add(filename);
-        }else if (flag_1 == 2 && flag_2 == 0) {
+        } else if (flag1 == 2 && flag2 == 0) {
             //(2,0): given删除，current修改
-            String content_1 = commit_1.getBlobContent(fileString);
-            conflictFileContent(currfile, content_1, "");
+            String content1 = commit1.getBlobContent(fileString);
+            conflictFileContent(currfile, content1, "");
             add(filename);
-        }else if (flag_1 == 1 && flag_2 == 1) {
+        } else if (flag1 == 1 && flag2 == 1) {
             //(1,1): given新增，current新增
-            bothAddOrChange(fileString, commit_1, commit_2);
+            bothAddOrChange(fileString, commit1, commit2);
             add(filename);
-        }else if (flag_1 == 2 && flag_2 == 2) {
+        } else if (flag1 == 2 && flag2 == 2) {
             //不可能存在(1,2) or (2,1)
             //(2,2): given修改，current修改
-            bothAddOrChange(fileString, commit_1, commit_2);
+            bothAddOrChange(fileString, commit1, commit2);
             add(filename);
         }
     }
     /** 文件同时新增或修改，修改为最终的文本*/
-    private static void bothAddOrChange(String fileString, Commit commit_1, Commit commit_2) {
+    private static void bothAddOrChange(String fileString, Commit commit1, Commit commit2) {
         File currfile = new File(fileString);
-        String commit_1_BlobId = commit_1.getBlobMap().get(fileString);
-        String commit_2_BlobId = commit_2.getBlobMap().get(fileString);
+        String commit1BlobId = commit1.getBlobMap().get(fileString);
+        String commit2BlobId = commit2.getBlobMap().get(fileString);
         //同时新增或修改，但是内容相同
-        if (commit_1_BlobId.equals(commit_2_BlobId)) {
-            String content = commit_1.getBlobContent(fileString);
+        if (commit1BlobId.equals(commit2BlobId)) {
+            String content = commit1.getBlobContent(fileString);
             writeContents(currfile, content);
-        }else { //新增或修改，但是内容不同
-            String content_1 = commit_1.getBlobContent(fileString);
-            String content_2 = commit_2.getBlobContent(fileString);
-            conflictFileContent(currfile, content_1, content_2);
+        } else { //新增或修改，但是内容不同
+            String content1 = commit1.getBlobContent(fileString);
+            String content2 = commit2.getBlobContent(fileString);
+            conflictFileContent(currfile, content1, content2);
         }
     }
     /** 处理冲突文件文本内容*/
